@@ -398,3 +398,12 @@ class FixAirByDateSetting(SetNzbTorrentSettings):
                 self.connection.action("UPDATE tv_shows SET air_by_date = ? WHERE tvdb_id = ?", [1, cur_show["tvdb_id"]])
         
         self.incDBVersion()
+
+class AddRequiredWordsOption(FixAirByDateSetting):
+    
+    def test(self):
+        return self.checkDBVersion() >= 10
+
+    def execute(self):
+        self.connection.action("ALTER TABLE tv_shows ADD required_words TEXT")
+        self.incDBVersion()
