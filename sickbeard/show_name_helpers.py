@@ -33,6 +33,51 @@ resultFilters = ["sub(pack|s|bed)", "nlsub(bed|s)?", "swesub(bed)?",
                  "(dir|sample|nfo)fix", "sample", "(dvd)?extras", 
                  "dub(bed)?"]
 
+def filterByRequiredWordsReleases(name, requiredWords):
+    """
+    Filters out non-english and just all-around stupid releases by comparing them
+    to the resultFilters contents.
+    
+    name: the release name to check
+    
+    Returns: True if the release name is OK, False if it's bad.
+    """
+
+    try:
+        fp = NameParser()
+        parse_result = fp.parse(name)
+    except InvalidNameException:
+        logger.log(u"Unable to parse the filename "+name+" into a valid episode", logger.WARNING)
+        return False
+
+                 
+		
+    # use the extra info and the scene group to filter against
+    check_string = ''
+    if parse_result.extra_info:
+        check_string = parse_result.extra_info
+    if parse_result.release_group:
+        if check_string:
+            check_string = check_string + '-' + parse_result.release_group
+        else:
+            check_string = parse_result.release_group 
+
+    # if there's no info after the season info then assume it's fine
+    if not check_string:
+        return True
+
+    # if any of the bad strings are in the name then say no
+    logger.log(u"filtered requiredWords", logger.DEBUG)
+    if ( requiredWords != ""):
+        
+        for x in requiredWords.split(','):
+            if re.search('(^|[\W_])'+x+'($|[\W_])', check_string, re.I):
+                logger.log(u"This scene release: "+name+" contains "+x+", add it", logger.DEBUG)
+                return True
+        logger.log(u"Invalid scene release: "+name+" not contains, ignore it", logger.DEBUG)
+        return False
+    return True
+
 def filterBadReleases(name):
     """
     Filters out non-english and just all-around stupid releases by comparing them
