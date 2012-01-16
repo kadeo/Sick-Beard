@@ -67,6 +67,7 @@ class TVShow(object):
         self.paused = 0
         self.air_by_date = 0
         self.lang = lang
+        self.required_words = ""
 
         self.lock = threading.Lock()
         self._isDirGood = False
@@ -525,6 +526,10 @@ class TVShow(object):
             if self.air_by_date == None:
                 self.air_by_date = 0
 
+            self.required_words = sqlResults[0]["required_words"]
+            if self.required_words == None:
+                self.required_words = ""    
+            
             self.quality = int(sqlResults[0]["quality"])
             self.seasonfolders = int(sqlResults[0]["seasonfolders"])
             self.paused = int(sqlResults[0]["paused"])
@@ -821,6 +826,7 @@ class TVShow(object):
                         "startyear": self.startyear,
                         "tvr_name": self.tvrname,
                         "lang": self.lang
+                        "required_words": self.required_words
                         }
 
         myDB.upsert("tv_shows", newValueDict, controlValueDict)
