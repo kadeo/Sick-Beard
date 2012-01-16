@@ -959,6 +959,7 @@ class ConfigPostProcessing:
                 self.name = "Show Name"
                 self.genre = "Comedy"
                 self.air_by_date = 0
+                self.required_words = ""
 
         # fake a TVShow (hack since new TVShow is coming anyway)
         class TVEpisode(tv.TVEpisode):
@@ -2154,7 +2155,7 @@ class Home:
         return result['description'] if result else 'Episode not found.'
 
     @cherrypy.expose
-    def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], seasonfolders=None, paused=None, directCall=False, air_by_date=None, tvdbLang=None):
+    def editShow(self, show=None, location=None, anyQualities=[], bestQualities=[], seasonfolders=None, paused=None, directCall=False, air_by_date=None, tvdbLang=None, required_words=None):
 
         if show == None:
             errString = "Invalid show ID: "+str(show)
@@ -2195,6 +2196,8 @@ class Home:
             air_by_date = 1
         else:
             air_by_date = 0
+        
+        required_words = required_words
 
         if tvdbLang and tvdbLang in tvdb_api.Tvdb().config['valid_languages']:
             tvdb_lang = tvdbLang
@@ -2228,6 +2231,7 @@ class Home:
             showObj.paused = paused
             showObj.air_by_date = air_by_date
             showObj.lang = tvdb_lang
+            showObj.required_words = required_words
 
             # if we change location clear the db of episodes, change it, write to db, and rescan
             if os.path.normpath(showObj._location) != os.path.normpath(location):
