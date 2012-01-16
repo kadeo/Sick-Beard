@@ -90,7 +90,7 @@ class ManualSearchQueueItem(generic_queue.QueueItem):
 
         logger.log("Searching for download for " + self.ep_obj.prettyName(True))
 
-        foundEpisode = search.findEpisode(self.ep_obj, manualSearch=True)
+        foundEpisode = search.findEpisode2(self.ep_obj.show.required_words, self.ep_obj, manualSearch=True)
         result = False
 
         if not foundEpisode:
