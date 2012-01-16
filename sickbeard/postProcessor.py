@@ -178,7 +178,7 @@ class PostProcessor(object):
 
             # If new base name then convert name
             if new_base_name:
-                new_file_name = new_base_name +'.' + cur_extension
+                new_file_name = new_base_name + ' (' + self.release_group + ')' +'.' + cur_extension
             # if we're not renaming we still want to change extensions sometimes
             else:
                 new_file_name = helpers.replaceExtension(cur_file_name, cur_extension)
@@ -676,7 +676,7 @@ class PostProcessor(object):
         if sickbeard.RENAME_EPISODES:
             orig_extension = self.file_name.rpartition('.')[-1]
             new_base_name = helpers.sanitizeFileName(ep_obj.prettyName())
-            new_file_name = new_base_name + '.' + orig_extension
+            new_file_name = new_base_name + ' (' + self.release_group + ')' + '.' + orig_extension
 
         else:
             # if we're not renaming then there's no new base name, we'll just use the existing name
