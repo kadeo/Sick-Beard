@@ -305,6 +305,55 @@ def findEpisode(episode, manualSearch=False):
 
     return bestResult
 
+def findEpisode2(requiredWords, episode, manualSearch=False):
+
+    logger.log(u"Searching for requiredWords=" + str(requiredWords) + "  - " + episode.prettyName(True))
+
+    foundResults = []
+
+    didSearch = False
+
+    for curProvider in providers.sortedProviderList():
+
+        if not curProvider.isActive():
+            continue
+
+        try:
+            curFoundResults = curProvider.findEpisode(episode, manualSearch=manualSearch)
+        except exceptions.AuthException, e:
+            logger.log(u"Authentication error: "+ex(e), logger.ERROR)
+            continue
+        except Exception, e:
+            logger.log(u"Error while searching "+curProvider.name+", skipping: "+ex(e), logger.ERROR)
+            logger.log(traceback.format_exc(), logger.DEBUG)
+            continue
+
+        didSearch = True
+
+        # skip non-tv crap
+        curFoundResults = filter(lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.filterByRequiredWordsReleases(x.name, requiredWords) and show_name_helpers.isGoodResult(x.name, episode.show), curFoundResults)
+
+        # loop all results and see if any of them are good enough that we can stop searching
+        done_searching = False
+        for cur_result in curFoundResults:
+            done_searching = isFinalResult(cur_result)
+            logger.log(u"Should we stop searching after finding "+cur_result.name+": "+str(done_searching), logger.DEBUG)
+            if done_searching:
+                break
+        
+        foundResults += curFoundResults
+
+        # if we did find a result that's good enough to stop then don't continue
+        if done_searching:
+            break
+
+    if not didSearch:
+        logger.log(u"No NZB/Torrent providers found or enabled in the sickbeard config. Please check your settings.", logger.ERROR)
+
+    bestResult = pickBestResult(foundResults)
+
+    return bestResult
+
 def findSeason(show, season):
 
     logger.log(u"Searching for stuff we need from "+show.name+" season "+str(season))
