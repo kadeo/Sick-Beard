@@ -331,7 +331,7 @@ def findEpisode2(requiredWords, episode, manualSearch=False):
         didSearch = True
 
         # skip non-tv crap
-        curFoundResults = filter(lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.filterByRequiredWordsReleases(x.name, requiredWords) and show_name_helpers.isGoodResult(x.name, episode.show), curFoundResults)
+        curFoundResults = filter(lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.filterByRequiredWordsReleases(x.name, episode.show.required_words) and show_name_helpers.isGoodResult(x.name, episode.show), curFoundResults)
 
         # loop all results and see if any of them are good enough that we can stop searching
         done_searching = False
@@ -374,7 +374,7 @@ def findSeason(show, season):
             for curEp in curResults:
 
                 # skip non-tv crap
-                curResults[curEp] =  filter(lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.filterByRequiredWordsReleases(x.name, requiredWords) and show_name_helpers.isGoodResult(x.name, episode.show), curResults[curEp])
+                curResults[curEp] =  filter(lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.filterByRequiredWordsReleases(x.name, show.required_words) and show_name_helpers.isGoodResult(x.name, episode.show), curResults[curEp])
 
                 if curEp in foundResults:
                     foundResults[curEp] += curResults[curEp]
@@ -449,7 +449,7 @@ def findSeason(show, season):
             # if not, break it apart and add them as the lowest priority results
             individualResults = nzbSplitter.splitResult(bestSeasonNZB)
 
-            individualResults =  filter(lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.filterByRequiredWordsReleases(x.name, requiredWords) and show_name_helpers.isGoodResult(x.name, episode.show), individualResults)
+            individualResults =  filter(lambda x: show_name_helpers.filterBadReleases(x.name) and show_name_helpers.filterByRequiredWordsReleases(x.name, episode.show.required_words) and show_name_helpers.isGoodResult(x.name, episode.show), individualResults)
 
             for curResult in individualResults:
                 if len(curResult.episodes) == 1:
